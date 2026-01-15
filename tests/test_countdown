@@ -1,0 +1,7 @@
+import unittest
+import src.countdown 
+
+class TestCountdown(unittest.TestCase):
+    def test_incorrect_input(self):
+        pass
+    
