@@ -1,8 +1,10 @@
 import time
 import random
-from countdown_letters import countdown_tiles_consonants as consonants, countdown_tiles_vowels as vowels
+from src.countdown_letters import countdown_tiles_consonants as consonants, countdown_tiles_vowels as vowels
+import requests
+
 def input_user_word(): #user inputs the word they have come up with after countdown is finished
-    user_word = input("What is your word?")
+    user_word = input("What is your word?\n ")
     return user_word
 
 def generate_letters():
@@ -11,7 +13,7 @@ def generate_letters():
     consonant_count = 0
     while True:
         while len(letters) < 9:
-            user_choice = input("Vowel (V) or consonant (C)?")
+            user_choice = input("Vowel (V) or consonant (C)?\n")
             if user_choice.isalpha() == False:
                 print("You must input a letter!")
             else:
@@ -36,8 +38,16 @@ def generate_letters():
         return letters
 
 #print(generate_letters())
-def valid_word(word):
-    pass
+def valid_word(letters, word):
+    for letter in word.upper():
+        while True:
+            if letter in letters:
+                return True
+                letters.remove(letter)
+            else:
+                return False
+    response = requests.get(f"https://api.dictionaryapi.dev/api/v1/entries/en/{word}")
+    return response.status_code == 200
 
 def award_points(word):
     #awarding points based on word length
@@ -49,10 +59,10 @@ def award_points(word):
         points = 18
     else:
         #word cannot be longer than 10 letters
-        print('Invalid word length!')
+        return ('Invalid word length!')
     return points
 
-def countdown(t):
+def countdown(t=30):
     while t:
         mins, secs = divmod(t, 60)
         timer = '{:02d}:{:02d}'.format(mins, secs)
@@ -62,10 +72,17 @@ def countdown(t):
     print("Time's up!")
 
 #countdown(30)
-#will need scraper to verify if word is valid
-def main():
-    print(generate_letters())
-    countdown(30)
-    print(award_points(input_user_word()))
 
-main()
+def main():
+    letters = generate_letters()
+    print(f"Your letters are {letters}")
+    countdown(30)
+    word = input_user_word()
+    if valid_word(letters, word) == True:
+        points = award_points(word)
+        print(f"Your word is worth {points} points!")
+    else:
+        print("Word is not valid!")
+
+if __name__ == "__main__":
+    main()
