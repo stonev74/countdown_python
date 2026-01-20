@@ -67,6 +67,9 @@ def award_points(target, final_num):
     elif 10 >= (target - final_num) >= -10:
             print(f"You were {abs(target-final_num)} away. 5 points!")
 
+def find_valid_calculation():
+    #find if there is a valid way to calculate the target number using the given numbers
+    pass
 def numbers_game():
     #run numbers game and associated functions
     numbers = generate_numbers()
@@ -77,4 +80,3 @@ def numbers_game():
     if validate_calculation(target_num, user_final_num, numbers):
         award_points()
 
-numbers_game()
