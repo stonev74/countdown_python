@@ -2,7 +2,7 @@ from itertools import permutations
 from spellchecker import SpellChecker
 from countdown_timer import countdown
 import random
-import requests
+import time
 spell = SpellChecker()
 
 try:  # when executed from project root or another module
@@ -41,31 +41,45 @@ def generate_letters():
     letters = []
     vowel_count = 0
     consonant_count = 0
-    while True:
-        while len(letters) < 9:
-            user_choice = input("Vowel (V) or consonant (C)?\n")
-            if user_choice.isalpha() == False:
-                print("You must input a letter!")
-            else:
-                if user_choice.lower() == 'v':
-                    if vowel_count == 5:
-                        print("You must choose at least four consonants!")
-                    else:
-                        choice = random.choice(vowels)
-                        letters.append(choice)
-                        vowel_count += 1
-                        vowels.remove(choice)
-                elif user_choice.lower() == 'c':
-                    if consonant_count == 6:
-                        print("you must choose at least three vowels!")
-                    else:
-                        choice = random.choice(consonants)
-                        letters.append(choice)
-                        consonant_count += 1
-                        consonants.remove(choice)
+    print("Would you like a vowel or a consonant?")
+    print("Enter V or C\n")
+    error_shown = False
+    while len(letters) < 9:
+        # Clear error from previous iteration if there was one
+        if error_shown:
+            print("\033[A\033[K", end='')
+            error_shown = False
+        
+        print(f"You have {vowel_count} vowel(s) and {consonant_count} consonant(s)")
+        choice = input("Choice: ").lower()
+        # Move cursor up 2 lines and clear them
+        print("\033[A\033[K\033[A\033[K", end='')
+        match choice:
+            case 'v':
+                if vowel_count == 5:
+                    print("You must choose at least four consonants!")
+                    error_shown = True
+                    time.sleep(2)
                 else:
-                    print('Invalid input!')
-        return letters
+                    choice = random.choice(vowels)
+                    letters.append(choice)
+                    vowel_count += 1
+                    vowels.remove(choice)
+            case 'c':
+                if consonant_count == 6:
+                    print("You must choose at least three vowels!")
+                    error_shown = True
+                    time.sleep(2)
+                else:
+                    choice = random.choice(consonants)
+                    letters.append(choice)
+                    consonant_count += 1
+                    consonants.remove(choice)
+            case _:
+                print("Invalid input. Please enter V or C.")
+                error_shown = True
+                time.sleep(2)
+    return letters
 
 def valid_word(letters, word):
     for letter in word.lower():
@@ -110,3 +124,4 @@ def letters_game():
             print('Error.')
         find_longest_word(letters)
 
+generate_letters()
