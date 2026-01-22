@@ -2,6 +2,7 @@ from countdown_numbers import big_numbers, small_numbers
 import random
 from countdown import countdown
 import re
+from itertools import permutations, combinations_with_replacement, combinations
 
 trial_set = [100, 25, 6, 3, 2, 5]
 
@@ -21,7 +22,7 @@ def generate_numbers():
     print("Your numbers are:", *generated_numbers)
     return generated_numbers
 
-
+trial_set = random.sample(big_numbers, 2) + random.sample(small_numbers, 4)
 target_num = random.randint(100, 999)
 
 def validate_calculation(final_num=500, numbers=trial_set):
@@ -67,9 +68,27 @@ def award_points(target, final_num):
     elif 10 >= (target - final_num) >= -10:
             print(f"You were {abs(target-final_num)} away. 5 points!")
 
-def find_valid_calculation():
+def find_valid_calculation(number_set, target):
     #find if there is a valid way to calculate the target number using the given numbers
-    pass
+    print(f"Find valid calculation for {target} with {number_set}...")
+    operators = ["+","-","*","/"]
+    #starts with smallest amount of numbers and works up to using 6 numbers to solve calculation
+    for r in range(1, len(number_set) + 1):
+        print(f"Calculating with  formulas with {r} numbers...")
+        for number_combo in combinations(number_set, r):
+            for values in permutations(number_combo):
+                for operCombo in combinations_with_replacement(operators, r-1):
+                    for oper in permutations(operCombo):
+                        formula = "".join(o+str(v) for o, v in zip([""]+list(oper), values))
+                        try:
+                            if eval(formula) == target:
+                                print(formula, '=', target)
+                                return formula
+                        except (ZeroDivisionError, ValueError):
+                            pass
+    print("No valid calculation found.")
+    return None
+
 def numbers_game():
     #run numbers game and associated functions
     numbers = generate_numbers()
@@ -79,4 +98,7 @@ def numbers_game():
     user_final_num = int(input("What is your final number?"))
     if validate_calculation(target_num, user_final_num, numbers):
         award_points()
+    find_valid_calculation(numbers, target_num)
+
+
 
